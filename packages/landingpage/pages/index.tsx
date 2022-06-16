@@ -51,14 +51,14 @@ export default function HomePage(props: Props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {props.data.coins.map(({item}) =>
-                            <TableRow>
+                        {props.data.coins.map(({item}, idx: number) =>
+                            <TableRow key={idx}>
                                 <TableCell>
                                     {item.market_cap_rank}
                                 </TableCell>
                                 <TableCell >
-                                    <img style={{verticalAlign: 'middle'}} src={item.thumb} width={25} alt=""/>
-                                    {item.name}
+                                    <img style={{verticalAlign: 'middle', marginRight: 5}} src={item.thumb} width={25} alt=""/>
+                                    <b>{item.name}</b>
                                 </TableCell>
                                 <TableCell>
                                     {item.score}
