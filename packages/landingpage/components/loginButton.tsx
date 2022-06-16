@@ -30,6 +30,7 @@ export default function LoginButton(props){
     }
     function handleClose() {
         setOpen(false)
+        setIsLogin(true)
     }
     function goToLogin() {
         setIsLogin(true)
