@@ -11,7 +11,11 @@ const useStyles = makeStyles( () => ({
     }
 }))
 
-export default function LoginForm() {
+interface Props {
+    onGoToRegister: any
+}
+
+export default function LoginForm({onGoToRegister}: Props) {
     const classes = useStyles()
 
     return <>
@@ -29,7 +33,7 @@ export default function LoginForm() {
             </Box>
             <Box mb={1}>
                 <Typography>
-                    Don't have account yet? <a className={classes.link}>Create one</a>
+                    Don't have account yet? <a onClick={onGoToRegister} className={classes.link}>Create one</a>
                 </Typography>
             </Box>
         </Container>
