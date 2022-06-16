@@ -2,9 +2,8 @@
 import React from "react";
 import axios from 'axios'
 import Layout from '../components/layout'
-import {
-    Card, CardActionArea, CardContent, CardMedia, Container, Grid, Paper, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Typography,
+import { Container, Paper, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow
 } from "@material-ui/core";
 
 interface Props {

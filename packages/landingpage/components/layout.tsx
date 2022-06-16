@@ -5,8 +5,9 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import React from "react";
+import LoginButton from "./loginButton";
+
 
 interface Props {
     children: any
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
             boxShadow: 'none'
         },
         wrapper: {
-            paddingTop: 20
+            paddingTop: 20,
         },
     }),
 )
@@ -54,7 +55,7 @@ export default function BaseLayout(props: Props) {
                                 CryptoWatcher
                             </Typography>
                             <div style={{flexGrow: 1}}></div>
-                            <Button style={{justifySelf: 'flex-end'}}>Login</Button>
+                            <LoginButton style={{justifySelf: 'flex-end'}}>Login</LoginButton>
                         </Toolbar>
                     </AppBar>
                     <div className={classes.wrapper}>
