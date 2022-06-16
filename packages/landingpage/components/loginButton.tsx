@@ -53,19 +53,9 @@ export default function LoginButton(props){
             </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-slide-description">
-                    { isLogin ? <LoginForm/> : <RegisterForm/> }
+                    { isLogin ? <LoginForm onGoToRegister={goToRegister}/> : <RegisterForm onGotoLogin={goToLogin}/> }
                 </DialogContentText>
             </DialogContent>
-            <DialogActions>
-                <Typography>
-                    {isLogin ?
-                        <Typography>Don't have an account yet? <a onClick={goToRegister}>create one</a>!</Typography>
-                        :
-                        <Typography>Already have an account? <a onClick={goToLogin}>login</a>!</Typography>
-                    }
-                </Typography>
-                <div style={{flexGrow: 1}}></div>
-            </DialogActions>
         </Dialog>}
     </>
 }
