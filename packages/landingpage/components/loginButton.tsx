@@ -53,9 +53,7 @@ export default function LoginButton(props){
                 Log in
             </DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
                     { isLogin ? <LoginForm onGoToRegister={goToRegister}/> : <RegisterForm onGotoLogin={goToLogin}/> }
-                </DialogContentText>
             </DialogContent>
         </Dialog>}
     </>
