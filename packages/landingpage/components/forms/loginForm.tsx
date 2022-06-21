@@ -69,10 +69,12 @@ export default function LoginForm({registerRedirectHandler, isSuccess}: Props) {
                 }
             </Box>
             <Box mb={1}>
-                <TextField error={formik.touched.email && !!formik.errors.email} helperText={formik.touched.email && formik.errors.email} value={formik.values.email} onChange={formik.handleChange} name='email' fullWidth placeholder='Email'/>
+                <TextField error={formik.touched.email && !!formik.errors.email} helperText={formik.touched.email && formik.errors.email}
+                           value={formik.values.email} onChange={formik.handleChange} name='email' fullWidth placeholder='Email'/>
             </Box>
             <Box mb={1}>
-                <TextField error={formik.touched.password && !!formik.errors.password} helperText={formik.touched.password && formik.errors.password} value={formik.values.password} onChange={formik.handleChange} fullWidth name='password' placeholder='Password'/>
+                <TextField error={formik.touched.password && !!formik.errors.password} helperText={formik.touched.password && formik.errors.password}
+                           value={formik.values.password} onChange={formik.handleChange} fullWidth name='password' placeholder='Password' type="password"/>
             </Box>
             <Box mb={1}>
                 <Button type="submit" disabled={formik.isSubmitting} fullWidth>

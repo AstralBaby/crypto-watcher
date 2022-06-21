@@ -75,13 +75,16 @@ export default function RegisterForm({loginRedirectHandler}: Props) {
                 }
             </Box>
             <Box mb={1}>
-                <TextField error={formik.touched.email && !!formik.errors.email} helperText={formik.touched.email && formik.errors.email} value={formik.values.email} onChange={formik.handleChange} name="email" fullWidth placeholder='Email'/>
+                <TextField error={formik.touched.email && !!formik.errors.email} helperText={formik.touched.email && formik.errors.email}
+                           value={formik.values.email} onChange={formik.handleChange} name="email" fullWidth placeholder='Email'/>
             </Box>
             <Box mb={1}>
-                <TextField error={formik.touched.name && !!formik.errors.name} helperText={formik.touched.name && formik.errors.name} value={formik.values.name} onChange={formik.handleChange} name="name" fullWidth placeholder='Name'/>
+                <TextField error={formik.touched.name && !!formik.errors.name} helperText={formik.touched.name && formik.errors.name}
+                           value={formik.values.name} onChange={formik.handleChange} name="name" fullWidth placeholder='Name'/>
             </Box>
             <Box mb={1}>
-                <TextField error={formik.touched.password && !!formik.errors.password} helperText={formik.touched.password && formik.errors.password} value={formik.values.password} onChange={formik.handleChange} name="password" fullWidth placeholder='Password'/>
+                <TextField error={formik.touched.password && !!formik.errors.password} helperText={formik.touched.password && formik.errors.password}
+                           value={formik.values.password} onChange={formik.handleChange} name="password" fullWidth placeholder='Password' type="password"/>
             </Box>
             <Box mb={1}>
                 <Button type="submit" disabled={formik.isSubmitting} fullWidth>
