@@ -5,10 +5,11 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import React, {useState} from "react";
 import LoginButton from "./loginButton";
-import {useSession} from "next-auth/react";
-
+import {signOut, useSession} from "next-auth/react";
+import {Button, Chip, Menu, MenuItem} from "@material-ui/core";
+import ManagementButton from "./managementButton";
 
 interface Props {
     children: any
@@ -22,8 +23,8 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: theme.spacing(2),
         },
         title: {
-            flexGrow: 1,
             color: '#0f172a',
+            paddingRight: 30,
             fontFamily: "'Kdam Thmor Pro', sans-serif !important"
         },
         appbar: {
@@ -33,6 +34,14 @@ const useStyles = makeStyles((theme: Theme) =>
         wrapper: {
             paddingTop: 20,
         },
+    }),
+)
+const menuStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            marginTop: 50,
+            flex: 1
+        }
     }),
 )
 
@@ -57,9 +66,12 @@ export default function BaseLayout(props: Props) {
                             <Typography variant="h6" className={classes.title}>
                                 CryptoWatcher
                             </Typography>
+                            {status === 'authenticated' && session.user.isAdmin &&
+                                 <ManagementButton/>
+                            }
                             <div style={{flexGrow: 1}}></div>
                             {status === 'authenticated' ?
-                                JSON.stringify(session) :
+                                <UserMenu user={session.user}></UserMenu> :
                                 <LoginButton style={{justifySelf: 'flex-end'}}>Login</LoginButton>
                             }
                         </Toolbar>
@@ -70,4 +82,21 @@ export default function BaseLayout(props: Props) {
                 </ThemeProvider>
             </div>
     )
+}
+
+function UserMenu({user}: any) {
+    // for shorthand, open stores the element the menu will attach to
+    const [open, setOpen] = useState<null | HTMLElement>(null)
+    const classes = menuStyles()
+
+    function handleClose(){
+        setOpen(null)
+    }
+
+    return <>
+        <Chip onClick={(e) => setOpen(e.currentTarget)} variant="outlined" label={user.name} />
+        <Menu className={classes.root} anchorEl={open} open={!!open} onClose={handleClose}>
+            <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+        </Menu>
+    </>
 }

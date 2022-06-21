@@ -11,7 +11,7 @@ export const sanityClient = createClient({
     projectId: process.env.STY_PROJECT,
     dataset: process.env.STY_DATASET,
     token: process.env.STY_TOKEN,
-    useCdn: true
+    useCdn: false
 })
 
 const options = {
@@ -26,7 +26,19 @@ const options = {
         strategy: 'jwt'
     },
     secret: "kjaksdjasdd",
-    adapter: SanityAdapter(sanityClient)
+    adapter: SanityAdapter(sanityClient),
+    callbacks: {
+        jwt: async ({ token, user }) => {
+            user && (token.user = user);
+            return token;
+        },
+        session: async ({ session, token }) => {
+            const { isAdmin } = await sanityClient.fetch(`*[_type == $schema && _id == $id][0]`, {schema: 'user', id: token.user.id})
+            session.user = {...token.user, isAdmin};  // Setting token in session
+
+            return session;
+        },
+    }
 };
 
 export default NextAuth(options);

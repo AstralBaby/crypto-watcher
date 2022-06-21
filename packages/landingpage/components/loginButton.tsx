@@ -17,7 +17,7 @@ export default function LoginButton(props: ButtonProps){
         ref: React.Ref<unknown>,
     ) {
         return <Slide direction="up" ref={ref} {...props} />;
-    });
+    })
 
     const [open, setOpen] = React.useState(false);
     const [isLogin, setIsLogin] = React.useState(true)
@@ -45,10 +45,8 @@ export default function LoginButton(props: ButtonProps){
             open={open}
             TransitionComponent={Transition}
             onClose={handleClose}
-            aria-labelledby="alert-dialog-slide-title"
-            aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle id="alert-dialog-slide-title" style={{textAlign: "center", fontWeight: "bold"}}>
+            <DialogTitle  style={{textAlign: "center", fontWeight: "bold"}}>
                 { isLogin ? "Log in" : "Register"}
             </DialogTitle>
             <DialogContent>

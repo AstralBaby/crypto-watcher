@@ -19,6 +19,11 @@ export const UserSchema = {
             type: 'url'
         },
         {
+            name: 'isAdmin',
+            title: 'isAdmin',
+            type: 'boolean'
+        },
+        {
             // this is only if you use credentials provider
             name: 'password',
             type: 'string',

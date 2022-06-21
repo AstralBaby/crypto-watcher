@@ -72,10 +72,8 @@ export default function HomePage(props: Props) {
 }
 
 export async function getServerSideProps() {
-    // Fetch data from external API
     const res = await axios.get(`https://api.coingecko.com/api/v3/search/trending`)
 
-    // Pass data to the page via props
     return { props: { data: res.data } }
 }
 
