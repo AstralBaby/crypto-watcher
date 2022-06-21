@@ -25,6 +25,7 @@ const options = {
     session: {
         strategy: 'jwt'
     },
+    secret: "kjaksdjasdd",
     adapter: SanityAdapter(sanityClient)
 };
 

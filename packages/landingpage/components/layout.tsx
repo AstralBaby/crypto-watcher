@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
 import LoginButton from "./loginButton";
+import {useSession} from "next-auth/react";
 
 
 interface Props {
@@ -37,6 +38,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function BaseLayout(props: Props) {
     const classes = useStyles()
+    const {data: session, status} = useSession()
+
     return (
             <div className={classes.root}>
                 <Head>
@@ -55,7 +58,10 @@ export default function BaseLayout(props: Props) {
                                 CryptoWatcher
                             </Typography>
                             <div style={{flexGrow: 1}}></div>
-                            <LoginButton style={{justifySelf: 'flex-end'}}>Login</LoginButton>
+                            {status === 'authenticated' ?
+                                JSON.stringify(session) :
+                                <LoginButton style={{justifySelf: 'flex-end'}}>Login</LoginButton>
+                            }
                         </Toolbar>
                     </AppBar>
                     <div className={classes.wrapper}>

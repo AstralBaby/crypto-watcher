@@ -1,9 +1,9 @@
-import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
+import {Box, Button, TextField, Typography} from "@material-ui/core";
 import React, {useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import {blue} from "@material-ui/core/colors";
 import {signUp} from "next-auth-sanity/client";
-import {Formik, Field, useFormik} from 'formik'
+import {useFormik} from 'formik'
 import * as yup from 'yup'
 import {Alert} from "@mui/material";
 
@@ -52,25 +52,25 @@ export default function RegisterForm({loginRedirectHandler}: Props) {
                 })
 
                 if (res.error) {
-                    setError(res.error)
+                    setError(res.error as string)
                 } else {
                     loginRedirectHandler(true)
                 }
 
             }
             catch (e) {
-                console.log(e)
+                setError(e.message)
             }
         }
     })
     const classes = useStyles()
-    const [error, setError] = useState<unknown>('')
+    const [error, setError] = useState('')
 
     return <form onSubmit={formik.handleSubmit}>
             <Box mb={1}>
                 { !!error &&
                 <Alert severity="warning" color="warning">
-                    {{ error }}
+                    { error }
                 </Alert>
                 }
             </Box>
