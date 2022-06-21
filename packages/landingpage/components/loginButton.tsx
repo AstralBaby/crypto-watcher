@@ -24,6 +24,7 @@ export default function LoginButton(props){
 
     const [open, setOpen] = React.useState(false);
     const [isLogin, setIsLogin] = React.useState(true)
+    const [isAccountCreated, setIsAccountCreated] = React.useState(false)
 
     function handleClickOpen() {
         setOpen(true)
@@ -32,8 +33,9 @@ export default function LoginButton(props){
         setOpen(false)
         setIsLogin(true)
     }
-    function goToLogin() {
+    function goToLogin(isSuccess) {
         setIsLogin(true)
+        if (isAccountCreated) setIsAccountCreated(true)
     }
     function goToRegister() {
         setIsLogin(false)
@@ -49,11 +51,11 @@ export default function LoginButton(props){
             aria-labelledby="alert-dialog-slide-title"
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle id="alert-dialog-slide-title">
-                Log in
+            <DialogTitle id="alert-dialog-slide-title" style={{textAlign: "center", fontWeight: "bold"}}>
+                { isLogin ? "Log in" : "Register"}
             </DialogTitle>
             <DialogContent>
-                    { isLogin ? <LoginForm onGoToRegister={goToRegister}/> : <RegisterForm onGotoLogin={goToLogin}/> }
+                    { isLogin ? <LoginForm isSuccess={isAccountCreated} registerRedirectHandler={goToRegister}/> : <RegisterForm loginRedirectHandler={goToLogin}/> }
             </DialogContent>
         </Dialog>}
     </>

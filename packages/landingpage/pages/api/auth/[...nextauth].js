@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import createClient from "@sanity/client"
 import {getUserByEmailQuery} from "./query"
 import argon2 from "argon2"
+import {SanityAdapter, SanityCredentials} from "next-auth-sanity";
 
 export const sanityClient = createClient({
     projectId: process.env.STY_PROJECT,
@@ -19,32 +20,12 @@ const options = {
             clientId: process.env.GITHUB_CLIENT_ID,
             clientSecret: process.env.GITHUB_CLIENT_SECRET
         }),
-        CredentialsProvider({
-            name: 'Credentials',
-            credentials: {
-                username: { label: 'Email', type: 'text', placeholder: 'Email address'},
-                password: { label: 'Password', type: 'password', placeholder: 'password' }
-            },
-            async authorize(credentials, req) {
-                // fetch user from sanity and check its existence
-                const user = await sanityClient.fetch(getUserByEmailQuery, {userSchema: UserSchema, email: credentials.email})
-                if (!user) throw new Error("Account not found")
-
-                if (await argon2.verify(user.password, credentials.password)) {
-                    return {
-                        email: user.email,
-                        name: user.name,
-                        id: user._id
-                    }
-                }
-
-                throw new Error("Wrong Password")
-            }
-        })
+        SanityCredentials(sanityClient)
     ],
     session: {
         strategy: 'jwt'
     },
+    adapter: SanityAdapter(sanityClient)
 };
 
 export default NextAuth(options);
