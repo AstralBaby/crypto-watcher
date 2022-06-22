@@ -15,7 +15,7 @@ Developer: Catalina Fernandez
 - docker-compose
 
 # Installation
-* Rename .env.example file to .env and place env variables
+* Rename .env.example file to .env and place env variables in /packages/landingpage
 * Build image and run container\
 `cd /path/to/project`
 `docker-compose up --build -d`\
