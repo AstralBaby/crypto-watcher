@@ -7,7 +7,8 @@ import {
     TableContainer, TableHead, TableRow
 } from "@material-ui/core";
 import FavoriteIcon from '@material-ui/icons/Favorite'
-import {useSession} from "next-auth/react";
+import DeleteIcon from '@material-ui/icons/Delete'
+import {useSession} from "next-auth/react"
 
 interface Props {
     data: any
@@ -17,7 +18,7 @@ interface Props {
 export default function HomePage(props: Props) {
     const [favorites, setFavorites] = useState<Array<any>>([])
     const [entries, setEntries] = useState<Array<any>>(props.data)
-    const { status } = useSession()
+    const { status, data: session } = useSession()
 
     //entries initial value comes from the ssr
     useEffect(() => {
@@ -56,8 +57,14 @@ export default function HomePage(props: Props) {
             setFavorites((prevState: Array<any>) => prevState.filter(fav => fav.cryptocurrency != id))
         }
 
-        const response = await axios.post('api/records/highlight', {coinId: id, highlight: !highlight})
+        await axios.post('api/records/highlight', {coinId: id, highlight: !highlight})
+    }
 
+    async function handleDelete(id: string) {
+        const response = await axios.delete('/api/records', { data: {id}})
+        if (response.status === 202) {
+            setEntries(prevState => prevState.filter(entry => entry.id !== id))
+        }
     }
 
     return <Layout>
@@ -98,11 +105,16 @@ export default function HomePage(props: Props) {
                                     {item.price_change_24h}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton>
-                                        { status === "authenticated" && item.allowHighlight &&
-                                            <FavoriteIcon onClick={() => handleFavorite(item.id)} style={{color: isHighlighted(item.id) ? 'red' : "grey"}}/>
-                                        }
-                                    </IconButton>
+                                    { status === "authenticated" && item.allowHighlight &&
+                                        <IconButton onClick={() => handleFavorite(item.id)}>
+                                            <FavoriteIcon style={{color: isHighlighted(item.id) ? 'red' : "grey"}}/>
+                                        </IconButton>
+                                    }
+                                    { status === "authenticated" && session.user.isAdmin &&
+                                        <IconButton onClick={() => handleDelete(item.id)}>
+                                            <DeleteIcon></DeleteIcon>
+                                        </IconButton>
+                                    }
                                 </TableCell>
                             </TableRow>
                         )}
