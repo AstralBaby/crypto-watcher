@@ -63,7 +63,7 @@ export default function HomePage(props: Props) {
     async function handleDelete(id: string) {
         const response = await axios.delete('/api/records', { data: {id}})
         if (response.status === 202) {
-            setEntries(prevState => prevState.filter(entry => entry.id !== id))
+            setEntries(prevState => prevState.filter(entry => entry._id !== id))
         }
     }
 
@@ -111,7 +111,7 @@ export default function HomePage(props: Props) {
                                         </IconButton>
                                     }
                                     { status === "authenticated" && session.user.isAdmin &&
-                                        <IconButton onClick={() => handleDelete(item.id)}>
+                                        <IconButton onClick={() => handleDelete(item._id)}>
                                             <DeleteIcon></DeleteIcon>
                                         </IconButton>
                                     }
