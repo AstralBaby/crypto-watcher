@@ -38,6 +38,7 @@ export default function ManagementButton() {
         const record = {
             name: selected.name,
             thumbnail: selected.thumb,
+            coinId: selected.id,
             allowHighlight,
         }
         await axios.post('api/records', {record})
