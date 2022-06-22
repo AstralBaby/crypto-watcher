@@ -20,24 +20,30 @@ export default function HomePage(props: Props) {
     const [entries, setEntries] = useState<Array<any>>(props.data)
     const { status, data: session } = useSession()
 
+
+    async function fetchEntries() {
+        const { data } = await axios.get('/api/records/list')
+        // get a comma separated list of coins from sanity entries
+        const ids = data.map((entry: any) => entry.coinId).join(',')
+        const { data: marketData } = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
+            params: {
+                vs_currency: 'usd',
+                ids
+            }
+        })
+
+        setEntries( data.map((entry: any) => ({...marketData.find((coin: any) => coin.id === entry.coinId), ...entry})) )
+    }
+
     //entries initial value comes from the ssr
     useEffect(() => {
         axios.get('api/records/highlight').then(({ data }) => setFavorites(data))
 
-        const interval = setInterval(async () => {
-            const { data } = await axios.get('/api/records/list')
-            // get a comma separated list of coins from sanity entries
-            const ids = data.map((entry: any) => entry.coinId).join(',')
-            const { data: marketData } = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-                params: {
-                    vs_currency: 'usd',
-                    ids
-                }
-            })
-            console.log("executing....")
 
-            setEntries( data.map((entry: any) => ({...marketData.find((coin: any) => coin.id === entry.coinId), ...entry})) )
-        }, 60000)
+        const interval = setInterval(fetchEntries, 60000)
+        document.addEventListener('new-record', async () => {
+            await fetchEntries()
+        })
 
         return () => clearInterval(interval)
     }, [])
