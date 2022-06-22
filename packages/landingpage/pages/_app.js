@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect } from "react";
+import {SessionProvider} from "next-auth/react";
 
 export default function MyApp({ Component, pageProps }) {
     useEffect(() => {
@@ -9,5 +10,7 @@ export default function MyApp({ Component, pageProps }) {
         }
     }, []);
 
-    return <Component {...pageProps}/>
+    return <SessionProvider session={pageProps.session}>
+        <Component {...pageProps}/>
+    </SessionProvider>
 }
