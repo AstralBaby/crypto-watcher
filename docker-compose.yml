@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+  nextjs:
+    ports:
+      - 3000:3000
+    build:
+      context: packages/landingpage
+      dockerfile: Dockerfile
+    volumes:
+      - ./packages/landingpage:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
+    container_name: nextjs
+    env_file:
+      - .env
