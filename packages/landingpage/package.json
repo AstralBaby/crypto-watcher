@@ -23,6 +23,7 @@
     "@material-ui/styles": "^4.11.5",
     "@mui/material": "^5.8.4",
     "@sanity/client": "^3.3.2",
+    "@sanity/uuid": "^3.0.1",
     "argon2": "^0.28.5",
     "axios": "^0.27.2",
     "dotenv": "^8.2.0",

@@ -2,9 +2,10 @@ import {
     Avatar,
     Box,
     Button,
+    Checkbox,
     Dialog,
     DialogContent,
-    DialogTitle,
+    DialogTitle, FormControlLabel, Grid,
     ListItem,
     ListItemIcon, ListItemText,
     Slide,
@@ -15,6 +16,7 @@ import {TransitionProps} from "@material-ui/core/transitions";
 import axios from "axios";
 import {Autocomplete} from "@mui/material";
 import Typography from "@material-ui/core/Typography";
+import {useSession} from "next-auth/react";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement<any, any> },
@@ -28,10 +30,25 @@ export default function ManagementButton() {
     const [open, setOpen] = useState(false)
     const [suggestions, setSuggestions] = useState([])
     const [selected, setSelected] = useState<{item: any} | null>({})
+    const [allowHighlight, setAllowHighlight] = useState(true)
+
+    async function addEntry() {
+        if (!selected) return
+
+        const record = {
+            name: selected.name,
+            thumbnail: selected.thumb,
+            allowHighlight,
+        }
+        await axios.post('api/records', {record})
+    }
 
     useEffect(() => {
-      axios.get(`https://api.coingecko.com/api/v3/search/trending`).then(res => setSuggestions(res.data.coins))
+      axios.get(`https://api.coingecko.com/api/v3/search/trending`).then(res => {
+          setSuggestions(res.data.coins.map((i: any) => i.item))
+      })
     }, [setSuggestions])
+
 
     return <>
         <Button onClick={() => setOpen(true)}>Edit</Button>
@@ -44,14 +61,22 @@ export default function ManagementButton() {
                     <Typography>
                         <b>Add new entry</b>
                     </Typography>
-                    <Autocomplete fullWidth options={suggestions}
-                                 getOptionLabel={option => option.item.name}
-                                 value={selected}
-                                 renderOption={(params, value) => <CoinOption {...params} option={value} onSelect={() => setSelected(value)}/>}
-                                 renderInput={(params) => <CoinSearchbar {...params}></CoinSearchbar>}/>
-                    <Button>
-                        Add
-                    </Button>
+                        <Box mb={2}>
+                            <Autocomplete fullWidth
+                                          options={suggestions}
+                                          getOptionLabel={option => option.name || ''}
+                                          value={selected}
+                                          renderOption={(params, value) => <CoinOption {...params} option={value} onSelect={() => setSelected(value)}/>}
+                                          renderInput={(params) => <CoinSearchbar {...params}/>}/>
+                        </Box>
+                        <Box mb={2}>
+                            <FormControlLabel control={<Checkbox defaultChecked value={allowHighlight} onChange={() => setAllowHighlight(prevState => !prevState)} />} label="Can be highlighted" />
+                        </Box>
+                        <Box mb={2}>
+                            <Button onClick={addEntry}>
+                                Add
+                            </Button>
+                        </Box>
                 </Box>
             </DialogContent>
         </Dialog>
@@ -59,17 +84,13 @@ export default function ManagementButton() {
 }
 
 function CoinOption({option, onSelect}: any) {
-    return <ListItem key={option.item.id} onClick={onSelect} style={{cursor: "pointer"}}>
+    return <ListItem key={option.id} onClick={onSelect} style={{cursor: "pointer"}}>
         <ListItemIcon>
-            <Avatar src={option.item.thumb} alt={option.item.name} />
+            <Avatar src={option.thumb} alt={option.name} />
         </ListItemIcon>
-        <ListItemText primary={option.item.name} />
+        <ListItemText primary={option.name} />
     </ListItem>
 }
 function CoinSearchbar(props: any) {
-    function handleSearchbar (e) {
-        console.log(e)
-    }
-
-    return <TextField {...props} placeholder="Search cryptocurrencies" onChange={e => handleSearchbar(e)}/>
+    return <TextField {...props} placeholder="Search cryptocurrencies" />
 }
