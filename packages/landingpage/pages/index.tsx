@@ -91,9 +91,12 @@ export default function HomePage(props: Props) {
                             </TableCell>
                             <TableCell>Price Change (24h)</TableCell>
                             <TableCell>
-                                <FormControlLabel
-                                    control={<Checkbox value={filterFavorites} onChange={() => setFilterFavorites(prevState => !prevState)} />}
-                                    label="Show favorites only" />
+                                {status === "authenticated" &&
+                                    <FormControlLabel
+                                        control={<Checkbox value={filterFavorites}
+                                                           onChange={() => setFilterFavorites(prevState => !prevState)}/>}
+                                        label="Show favorites only"/>
+                                }
                             </TableCell>
                         </TableRow>
                     </TableHead>
