@@ -3,7 +3,8 @@ import React, {useEffect, useState} from "react";
 import axios from 'axios'
 import Layout from '../components/layout'
 import {
-    Container, IconButton, Paper, Table, TableBody, TableCell,
+    Checkbox,
+    Container, FormControlLabel, IconButton, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow
 } from "@material-ui/core";
 import FavoriteIcon from '@material-ui/icons/Favorite'
@@ -17,6 +18,7 @@ interface Props {
 
 export default function HomePage(props: Props) {
     const [favorites, setFavorites] = useState<Array<any>>([])
+    const [filterFavorites, setFilterFavorites] = useState(false)
     const [entries, setEntries] = useState<Array<any>>(props.data)
     const { status, data: session } = useSession()
 
@@ -88,11 +90,15 @@ export default function HomePage(props: Props) {
                                 Market Capitalization
                             </TableCell>
                             <TableCell>Price Change (24h)</TableCell>
-                            <TableCell/>
+                            <TableCell>
+                                <FormControlLabel
+                                    control={<Checkbox value={filterFavorites} onChange={() => setFilterFavorites(prevState => !prevState)} />}
+                                    label="Show favorites only" />
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {entries.map((item, idx: number) =>
+                        {(filterFavorites ? entries.filter(entry => isHighlighted(entry.id)) : entries).map((item, idx: number) =>
                             <TableRow key={idx}>
                                 <TableCell>
                                     {item.market_cap_rank}
@@ -111,14 +117,14 @@ export default function HomePage(props: Props) {
                                     {item.price_change_24h}
                                 </TableCell>
                                 <TableCell>
+                                    { status === "authenticated" && session.user.isAdmin &&
+                                    <IconButton onClick={() => handleDelete(item._id)}>
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                    }
                                     { status === "authenticated" && item.allowHighlight &&
                                         <IconButton onClick={() => handleFavorite(item.id)}>
                                             <FavoriteIcon style={{color: isHighlighted(item.id) ? 'red' : "grey"}}/>
-                                        </IconButton>
-                                    }
-                                    { status === "authenticated" && session.user.isAdmin &&
-                                        <IconButton onClick={() => handleDelete(item._id)}>
-                                            <DeleteIcon></DeleteIcon>
                                         </IconButton>
                                     }
                                 </TableCell>
