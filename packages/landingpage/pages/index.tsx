@@ -3,11 +3,13 @@ import React, {useEffect, useState} from "react";
 import axios from 'axios'
 import Layout from '../components/layout'
 import {
-    Container, IconButton, Paper, Table, TableBody, TableCell,
+    Checkbox,
+    Container, FormControlLabel, IconButton, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow
 } from "@material-ui/core";
 import FavoriteIcon from '@material-ui/icons/Favorite'
-import {useSession} from "next-auth/react";
+import DeleteIcon from '@material-ui/icons/Delete'
+import {useSession} from "next-auth/react"
 
 interface Props {
     data: any
@@ -16,27 +18,34 @@ interface Props {
 
 export default function HomePage(props: Props) {
     const [favorites, setFavorites] = useState<Array<any>>([])
+    const [filterFavorites, setFilterFavorites] = useState(false)
     const [entries, setEntries] = useState<Array<any>>(props.data)
-    const { status } = useSession()
+    const { status, data: session } = useSession()
+
+
+    async function fetchEntries() {
+        const { data } = await axios.get('/api/records/list')
+        // get a comma separated list of coins from sanity entries
+        const ids = data.map((entry: any) => entry.coinId).join(',')
+        const { data: marketData } = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
+            params: {
+                vs_currency: 'usd',
+                ids
+            }
+        })
+
+        setEntries( data.map((entry: any) => ({...marketData.find((coin: any) => coin.id === entry.coinId), ...entry})) )
+    }
 
     //entries initial value comes from the ssr
     useEffect(() => {
         axios.get('api/records/highlight').then(({ data }) => setFavorites(data))
 
-        const interval = setInterval(async () => {
-            const { data } = await axios.get('/api/records/list')
-            // get a comma separated list of coins from sanity entries
-            const ids = data.map((entry: any) => entry.coinId).join(',')
-            const { data: marketData } = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-                params: {
-                    vs_currency: 'usd',
-                    ids
-                }
-            })
-            console.log("executing....")
 
-            setEntries( data.map((entry: any) => ({...marketData.find((coin: any) => coin.id === entry.coinId), ...entry})) )
-        }, 60000)
+        const interval = setInterval(fetchEntries, 60000)
+        document.addEventListener('new-record', async () => {
+            await fetchEntries()
+        })
 
         return () => clearInterval(interval)
     }, [])
@@ -56,8 +65,14 @@ export default function HomePage(props: Props) {
             setFavorites((prevState: Array<any>) => prevState.filter(fav => fav.cryptocurrency != id))
         }
 
-        const response = await axios.post('api/records/highlight', {coinId: id, highlight: !highlight})
+        await axios.post('api/records/highlight', {coinId: id, highlight: !highlight})
+    }
 
+    async function handleDelete(id: string) {
+        const response = await axios.delete('/api/records', { data: {id}})
+        if (response.status === 202) {
+            setEntries(prevState => prevState.filter(entry => entry._id !== id))
+        }
     }
 
     return <Layout>
@@ -75,11 +90,15 @@ export default function HomePage(props: Props) {
                                 Market Capitalization
                             </TableCell>
                             <TableCell>Price Change (24h)</TableCell>
-                            <TableCell/>
+                            <TableCell>
+                                <FormControlLabel
+                                    control={<Checkbox value={filterFavorites} onChange={() => setFilterFavorites(prevState => !prevState)} />}
+                                    label="Show favorites only" />
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {entries.map((item, idx: number) =>
+                        {(filterFavorites ? entries.filter(entry => isHighlighted(entry.id)) : entries).map((item, idx: number) =>
                             <TableRow key={idx}>
                                 <TableCell>
                                     {item.market_cap_rank}
@@ -98,11 +117,16 @@ export default function HomePage(props: Props) {
                                     {item.price_change_24h}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton>
-                                        { status === "authenticated" && item.allowHighlight &&
-                                            <FavoriteIcon onClick={() => handleFavorite(item.id)} style={{color: isHighlighted(item.id) ? 'red' : "grey"}}/>
-                                        }
+                                    { status === "authenticated" && session.user.isAdmin &&
+                                    <IconButton onClick={() => handleDelete(item._id)}>
+                                        <DeleteIcon></DeleteIcon>
                                     </IconButton>
+                                    }
+                                    { status === "authenticated" && item.allowHighlight &&
+                                        <IconButton onClick={() => handleFavorite(item.id)}>
+                                            <FavoriteIcon style={{color: isHighlighted(item.id) ? 'red' : "grey"}}/>
+                                        </IconButton>
+                                    }
                                 </TableCell>
                             </TableRow>
                         )}

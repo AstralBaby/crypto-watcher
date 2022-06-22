@@ -41,7 +41,17 @@ export default function ManagementButton() {
             coinId: selected.id,
             allowHighlight,
         }
-        await axios.post('api/records', {record})
+        const response = await axios.post('api/records', {record})
+        if (response.status === 201) {
+            setOpen(false)
+            //reset init values
+            setSelected(null)
+            setAllowHighlight(true)
+
+            //should use flux instead ghahaha
+            const newRecordEvent = new CustomEvent("new-record")
+            document.dispatchEvent(newRecordEvent)
+        }
     }
 
     useEffect(() => {
